@@ -49,6 +49,8 @@ public class SDPUtils
 		out.write("s=" + sdp.getSessionName() + CRLF);
 		
 		if (sdp.getSessionInfo().isPresent()) { out.write("i=" + sdp.getSessionInfo().get() + CRLF); }
+		
+		if (sdp.getSessionDescription().isPresent()) { out.write("u=" + sdp.getSessionDescription().get().toString() + CRLF); }
 	}
 	
 	

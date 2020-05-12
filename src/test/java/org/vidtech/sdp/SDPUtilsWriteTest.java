@@ -46,6 +46,42 @@ public class SDPUtilsWriteTest
 		
 	}
 	
+	
+	public void testCanWriteSDPWithFullData()
+	{
+		SDPDescriptor sdp = SDPDescriptor.builder()
+							    .withOriginator(
+						    		Originator.builder()
+										.withId("dave")
+										.withVersion("bob")
+										.withAddrType(AddressType.IP4)
+										.withUnicastAddress("streaming.awesome.com")
+										.build())
+					            .withSessionName("A session")
+					            .withSessionInfo("more detqail about it")
+					            .withSessionDescription("www.uritodetail.com")
+					            .build();
+		
+		String expected = "v=0\r\n" 
+		                + "o=- dave bob IN IP4 streaming.awesome.com\r\n"
+				        + "s=A session\r\n"
+				        + "i=more detqail about it\r\n"
+				        + "u=www.uritodetail.com\r\n";
+
+		try
+		{
+			StringWriter w = new StringWriter();
+			SDPUtils.write(sdp, w);
+			
+			assertEquals(w.toString(), expected, "Unexpected string write output");
+		}
+		catch (IOException e)
+		{
+			fail("Unexpected IO error");
+		}
+		
+	}
+	
 
 	
 	

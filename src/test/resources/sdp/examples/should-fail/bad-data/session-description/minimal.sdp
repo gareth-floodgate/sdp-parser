@@ -1,0 +1,4 @@
+v=0
+o=- 123 0 IN IP4 streaming.awesome.com
+s=my session
+u=bob|.bob.com

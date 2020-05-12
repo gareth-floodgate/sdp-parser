@@ -85,7 +85,8 @@ public class SDPDescriptorParser
 						new TypeStateMapping(Character.valueOf('v'), true, PARSE_STATE.GENERAL),
 						new TypeStateMapping(Character.valueOf('o'), true, PARSE_STATE.GENERAL),
 					    new TypeStateMapping(Character.valueOf('s'), true, PARSE_STATE.GENERAL),
-					    new TypeStateMapping(Character.valueOf('i'), false, PARSE_STATE.GENERAL)
+					    new TypeStateMapping(Character.valueOf('i'), false, PARSE_STATE.GENERAL),
+					    new TypeStateMapping(Character.valueOf('u'), false, PARSE_STATE.GENERAL)
 			)
 		);
 		
@@ -210,6 +211,12 @@ public class SDPDescriptorParser
 						{
 							// Session info is merely text
 							builder.withSessionInfo(remainingLine);
+							break; 
+						}
+						case 'u': 
+						{
+							// URI is merely text
+							builder.withSessionDescription(remainingLine);
 							break; 
 						}
 						
