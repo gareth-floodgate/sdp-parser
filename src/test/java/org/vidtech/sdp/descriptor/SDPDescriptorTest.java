@@ -33,6 +33,7 @@ public class SDPDescriptorTest
 		assertEquals(s.getSessionName(), "alice", "session name not set properly.");
 		assertTrue(!s.getSessionInfo().isPresent(), "uri set incorrectly.");
 		assertTrue(!s.getSessionDescription().isPresent(), "uri set incorrectly.");
+		assertTrue(s.getContactEmails().isEmpty(), "list set incorrectly.");
 	}
 	
 	public void testCanBuildSDPWithFullData()
@@ -50,6 +51,8 @@ public class SDPDescriptorTest
 				.withSessionName("alice")
 				.withSessionInfo("emma")
 				.withSessionDescription("www.awesome.com")
+	            .withContactEmail("bob@mail.com")
+	            .withContactEmail("alice@mail.com")
 				.build();
 		
 		assertNotNull(s.getOriginator(), "unexpected null originator");
@@ -57,6 +60,10 @@ public class SDPDescriptorTest
 		assertTrue(s.getSessionInfo().isPresent(), "session info not set properly.");
 		assertEquals(s.getSessionInfo().get(), "emma", "session info not set properly.");
 		assertEquals(s.getSessionDescription().get(), URI.create("www.awesome.com"), "session info not set properly.");
+		assertTrue(!s.getContactEmails().isEmpty(), "list not updated properly");
+		assertEquals(s.getContactEmails().size(), 2, "list not updated properly");
+		assertEquals(s.getContactEmails().get(0), "bob@mail.com", "list not updated properly");
+		assertEquals(s.getContactEmails().get(1), "alice@mail.com", "list not updated properly");
 	}
 	
 	
@@ -69,6 +76,7 @@ public class SDPDescriptorTest
 			fail("Exepcted exception");
 		}
 		catch (IllegalStateException e) { /* do nothing - expected. */ }
+		
 		try
 		{
 			// no session name
@@ -84,6 +92,7 @@ public class SDPDescriptorTest
 			fail("Exepcted exception");
 		}
 		catch (IllegalStateException e) { /* do nothing - expected. */ }
+		
 		try
 		{
 			// bad uri
@@ -101,6 +110,26 @@ public class SDPDescriptorTest
 			fail("Exepcted exception");
 		}
 		catch (IllegalStateException e) { /* do nothing - expected. */ }
+		
+		try
+		{
+			// bad email
+			SDPDescriptor.builder()
+			.withOriginator(
+					Originator.builder()
+							.withId("dave")
+							.withVersion("bob")
+							.withAddrType(AddressType.IP4)
+							.withUnicastAddress("streaming.awesome.com")
+							.build())
+			.withSessionName("bob")
+			.withContactEmail(null)
+			.build();
+			fail("Exepcted exception");
+		}
+		catch (IllegalStateException e)
+		{
+			/* do nothing - expected. */ }
 		
 	
 	}

@@ -23,6 +23,10 @@ public class SDPUtils
 	private SDPUtils() { }
 	
 	
+	
+// TODO - allow setting of new line character set
+	
+	
 	/**
 	 * Write an SDP descriptor in RFC 4566 compliant output.
 	 * 
@@ -51,6 +55,11 @@ public class SDPUtils
 		if (sdp.getSessionInfo().isPresent()) { out.write("i=" + sdp.getSessionInfo().get() + CRLF); }
 		
 		if (sdp.getSessionDescription().isPresent()) { out.write("u=" + sdp.getSessionDescription().get().toString() + CRLF); }
+	
+		for (final String email : sdp.getContactEmails())
+		{
+			out.write("e=" + email + CRLF);
+		}
 	}
 	
 	

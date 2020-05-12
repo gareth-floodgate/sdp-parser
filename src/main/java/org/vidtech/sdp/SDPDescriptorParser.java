@@ -37,12 +37,14 @@ public class SDPDescriptorParser
 	{
 		private Character type;
 		private boolean mandatory;
+		private boolean multiple;
 		private PARSE_STATE tranisiton;
 
-		public TypeStateMapping(final Character type, final boolean mandatory, final PARSE_STATE transition)
+		public TypeStateMapping(final Character type, final boolean mandatory, final boolean multiple, final PARSE_STATE transition)
 		{
 			this.type = type;
 			this.mandatory = mandatory;
+			this.multiple = multiple;
 			this.tranisiton = transition;
 		}
 
@@ -56,6 +58,11 @@ public class SDPDescriptorParser
 			return mandatory;
 		}
 
+		public boolean isMultiple() 
+		{
+			return multiple;
+		}
+		
 		public PARSE_STATE getTranisiton() 
 		{
 			return tranisiton;
@@ -82,11 +89,12 @@ public class SDPDescriptorParser
 		// Add transitions for general state. 
 		PARSER_STATES_AND_TRANSITIONS.put(PARSE_STATE.GENERAL, 
 				Arrays.asList( 
-						new TypeStateMapping(Character.valueOf('v'), true, PARSE_STATE.GENERAL),
-						new TypeStateMapping(Character.valueOf('o'), true, PARSE_STATE.GENERAL),
-					    new TypeStateMapping(Character.valueOf('s'), true, PARSE_STATE.GENERAL),
-					    new TypeStateMapping(Character.valueOf('i'), false, PARSE_STATE.GENERAL),
-					    new TypeStateMapping(Character.valueOf('u'), false, PARSE_STATE.GENERAL)
+						new TypeStateMapping(Character.valueOf('v'), true, false, PARSE_STATE.GENERAL),
+						new TypeStateMapping(Character.valueOf('o'), true, false, PARSE_STATE.GENERAL),
+					    new TypeStateMapping(Character.valueOf('s'), true, false, PARSE_STATE.GENERAL),
+					    new TypeStateMapping(Character.valueOf('i'), false, false, PARSE_STATE.GENERAL),
+					    new TypeStateMapping(Character.valueOf('u'), false, false, PARSE_STATE.GENERAL),
+					    new TypeStateMapping(Character.valueOf('e'), false, true, PARSE_STATE.GENERAL)
 			)
 		);
 		
@@ -219,6 +227,12 @@ public class SDPDescriptorParser
 							builder.withSessionDescription(remainingLine);
 							break; 
 						}
+						case 'e': 
+						{
+							// email is merely text
+							builder.withContactEmail(remainingLine);
+							break; 
+						}
 						
 						default: 
 						{ 
@@ -303,7 +317,7 @@ public class SDPDescriptorParser
 			int lookahead = currentstep;
 
 			// loop until next found - or len of list reached
-			while (++lookahead < possibles.size())
+			while (lookahead < possibles.size())
 			{
 				next = possibles.get(lookahead);
 				if (next.getType().equals(Character.valueOf(type)))
@@ -311,13 +325,15 @@ public class SDPDescriptorParser
 					currentstep = lookahead;
 					break;
 				}
+				
+				lookahead++;
 			}
 			
 			return next;
 		}
 		else
 		{
-			currentstep++;
+			if (!current.isMultiple()) { currentstep++; }
 			return current;
 		}
 	}

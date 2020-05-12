@@ -60,13 +60,17 @@ public class SDPUtilsWriteTest
 					            .withSessionName("A session")
 					            .withSessionInfo("more detqail about it")
 					            .withSessionDescription("www.uritodetail.com")
+					            .withContactEmail("bob@mail.com")
+					            .withContactEmail("alice@mail.com")
 					            .build();
 		
 		String expected = "v=0\r\n" 
 		                + "o=- dave bob IN IP4 streaming.awesome.com\r\n"
 				        + "s=A session\r\n"
 				        + "i=more detqail about it\r\n"
-				        + "u=www.uritodetail.com\r\n";
+				        + "u=www.uritodetail.com\r\n"
+				        + "e=bob@mail.com\r\n"
+				        + "e=alice@mail.com\r\n";
 
 		try
 		{

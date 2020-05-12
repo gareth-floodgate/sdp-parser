@@ -1,6 +1,9 @@
 package org.vidtech.sdp.descriptor;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -24,6 +27,9 @@ public class SDPDescriptor
 	
 	/** The (optional) session description (URI). */
 	private final Optional<URI> sessionDescription;
+		
+	/** The (optional - list will be empty) session contact emails. */
+	private final List<String> contactEmails = new ArrayList<>();
 	
 	
 	/**
@@ -38,6 +44,7 @@ public class SDPDescriptor
 		this.sessionName = builder.sessionName;
 		this.sessionInfo = Optional.ofNullable(builder.sessionInfo);
 		this.sessionDescription = builder.sessionDescription == null ? Optional.empty() : Optional.of(URI.create(builder.sessionDescription));
+		this.contactEmails.addAll(builder.contactEmails);
 	}
 
 
@@ -62,6 +69,10 @@ public class SDPDescriptor
 	{
 		return sessionDescription;
 	}
+	public List<String> getContactEmails()
+	{
+		return Collections.unmodifiableList(contactEmails);
+	}
 	
 	
 	/**
@@ -80,7 +91,8 @@ public class SDPDescriptor
 		private String sessionName;
 		private String sessionInfo;
 		private String sessionDescription;
-
+		private List<String> contactEmails = new ArrayList<>();
+		
 		private Builder() {
 		}
 
@@ -105,6 +117,11 @@ public class SDPDescriptor
 			return this;
 		}
 				
+		public Builder withContactEmail(String contactEmail) {
+			this.contactEmails.add(contactEmail);
+			return this;
+		}
+			
 		public SDPDescriptor build() {
 			validate();
 
@@ -115,11 +132,17 @@ public class SDPDescriptor
 		{
 			if (originator == null) 				{ throw new IllegalStateException("originator value not set"); }
 			if (sessionName == null)	 			{ throw new IllegalStateException("session name value not set"); }
+			
 			try 
 			{ 
-				if (sessionDescription != null) URI.create(sessionDescription); 
+				if (sessionDescription != null) { URI.create(sessionDescription); }
 			} 
 			catch (IllegalArgumentException e) {  throw new IllegalStateException("session description invalid"); }
+			
+			for (String email : contactEmails)
+			{
+				if (email == null) { throw new IllegalStateException("contact email invalid"); }
+			}
 		}
 	}
 	
