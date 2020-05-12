@@ -5,7 +5,6 @@ package org.vidtech.sdp.descriptor;
  * 
  * See https://tools.ietf.org/html/rfc4566#page-11 
  * 5.2.  Origin ("o=")
- *
  */
 public class Originator 
 {
