@@ -25,7 +25,7 @@ public class Originator
 	/** The address type. */
 	private final AddressType addrType;
 	
-	/** The IP address of the source. */
+	/** The network address of the source. */
 	private final String unicastAddress;
 
 
@@ -136,8 +136,19 @@ public class Originator
 				username = "-";
 			}
 			
+			validate();
+			
 			return new Originator(this);
 		}
+		
+		private void validate()
+		{
+			if (id == null) 			{ throw new IllegalStateException("id value not set"); }
+			if (version == null)	 	{ throw new IllegalStateException("version value not set"); }
+			if (addrType == null) 		{ throw new IllegalStateException("address-type value not set"); }
+			if (unicastAddress == null)	{ throw new IllegalStateException("address value not set"); }
+		}
+		
 	}
 	
 	

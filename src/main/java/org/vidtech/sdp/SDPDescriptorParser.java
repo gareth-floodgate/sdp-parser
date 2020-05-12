@@ -84,7 +84,8 @@ public class SDPDescriptorParser
 				Arrays.asList( 
 						new TypeStateMapping(Character.valueOf('v'), true, PARSE_STATE.GENERAL),
 						new TypeStateMapping(Character.valueOf('o'), true, PARSE_STATE.GENERAL),
-					    new TypeStateMapping(Character.valueOf('s'), true, PARSE_STATE.GENERAL)
+					    new TypeStateMapping(Character.valueOf('s'), true, PARSE_STATE.GENERAL),
+					    new TypeStateMapping(Character.valueOf('i'), false, PARSE_STATE.GENERAL)
 			)
 		);
 		
@@ -149,6 +150,13 @@ public class SDPDescriptorParser
 	private SDPDescriptor.Builder parseSDP(final BufferedReader r)
 	throws IOException
 	{
+		// We want to track that all mandatory types have been seen.
+		final Set<Character> mandatoryLinesRemaining = 
+				PARSER_STATES_AND_TRANSITIONS.get(PARSE_STATE.GENERAL).stream()
+					.filter(TypeStateMapping::isMandatory)
+					.map(TypeStateMapping::getType)
+					.collect(Collectors.toSet());
+		
 		final SDPDescriptor.Builder builder = SDPDescriptor.builder();
 
 		String line = null;
@@ -162,6 +170,9 @@ public class SDPDescriptorParser
 				// Determine if this line is valid in the context of the parse.
 				if ((mapping = moveMarkerAndGetMappingForType(type)) != null)
 				{
+					// Remove this mapping as 'found' if it is mandatory.
+					if (mapping.isMandatory()) { mandatoryLinesRemaining.remove(mapping.getType()); }
+					
 					// The current line type is valid and in-order, so parse it.
 					final String remainingLine = line.substring(2);
 					switch (type)
@@ -195,6 +206,12 @@ public class SDPDescriptorParser
 							builder.withSessionName(remainingLine);
 							break; 
 						}
+						case 'i': 
+						{
+							// Session info is merely text
+							builder.withSessionInfo(remainingLine);
+							break; 
+						}
 						
 						default: 
 						{ 
@@ -208,6 +225,11 @@ public class SDPDescriptorParser
 				// This is not a valid line for SDP, so skip it.
 				continue;
 			}
+		}
+		
+		if (!mandatoryLinesRemaining.isEmpty())
+		{
+			throw new IllegalStateException("Missing mandatory lines - " + mandatoryLinesRemaining.toString());
 		}
 		
 		return builder;
@@ -292,34 +314,6 @@ public class SDPDescriptorParser
 			return current;
 		}
 	}
-
-
-//	private boolean isValidEntryForStateAndLocation(final char type) 
-//	{
-//		boolean isValid = false;
-//		List<TypeStateMapping> possibles = PARSER_STATES_AND_TRANSITIONS.get(currentState);
-//		TypeStateMapping next = possibles.get(currentstep);
-//		
-//		if (!next.getType().equals(Character.valueOf(type)))
-//		{
-//			int lookahead = currentstep;
-//
-//				// loop until next found - or len of list reached
-//				while (++lookahead < possibles.size())
-//				{
-//					next = possibles.get(lookahead);
-//					if (next.getType().equals(Character.valueOf(type)))
-//					{
-//						isValid = true;
-//						break;
-//					}
-//				}
-//			
-//			
-//		}
-//		
-//		return isValid;
-//	}
 	
 	
 	/**

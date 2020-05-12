@@ -1,6 +1,7 @@
 package org.vidtech.sdp.descriptor;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.fail;
 
 import org.testng.annotations.Test;
 import org.vidtech.sdp.descriptor.Originator.AddressType;
@@ -43,6 +44,37 @@ public class OriginatorTest
 		assertEquals(o.getNetType(), NetworkType.IN, "network type should be set properly");
 		assertEquals(o.getAddrType(), AddressType.IP4, "address type should be set properly");
 		assertEquals(o.getUnicastAddress(), "streaming.awesome.com", "address should be set properly");
+	}
+	
+	public void testValidatesAndRejectsBadDataCorrectly()
+	{
+		try
+		{
+			Originator.builder().build();
+			fail("Exepcted exception");
+		}
+		catch (IllegalStateException e) { /* do nothing - expected. */ }
+		try
+		{
+			Originator.builder().withId("dave").build();
+			fail("Exepcted exception");
+		}
+		catch (IllegalStateException e) { /* do nothing - expected. */ }
+		try
+		{
+			Originator.builder().withId("dave").withVersion("bob").build();
+
+			fail("Exepcted exception");
+		}
+		catch (IllegalStateException e) { /* do nothing - expected. */ }
+		try
+		{
+			Originator.builder().withId("dave").withVersion("bob").withAddrType(AddressType.IP4).build();
+
+			fail("Exepcted exception");
+		}
+		catch (IllegalStateException e) { /* do nothing - expected. */ }
+		
 	}
 	
 	

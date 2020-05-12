@@ -18,6 +18,12 @@ public class SDPUtils
 
 	
 	/**
+	 * Private Constructor, no class instances needed.
+	 */
+	private SDPUtils() { }
+	
+	
+	/**
 	 * Write an SDP descriptor in RFC 4566 compliant output.
 	 * 
 	 * @param sdp A valid SDPDescriptor instance to write.
@@ -41,6 +47,8 @@ public class SDPUtils
 		out.write(b.toString() + CRLF);
 
 		out.write("s=" + sdp.getSessionName() + CRLF);
+		
+		if (sdp.getSessionInfo().isPresent()) { out.write("i=" + sdp.getSessionInfo().get() + CRLF); }
 	}
 	
 	

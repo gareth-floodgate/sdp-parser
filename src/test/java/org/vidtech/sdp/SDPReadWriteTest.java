@@ -19,8 +19,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.vidtech.sdp.descriptor.SDPDescriptor;
 
-import com.google.common.base.Charsets;
-
 @Test
 public class SDPReadWriteTest
 {
@@ -77,7 +75,7 @@ public class SDPReadWriteTest
 	{
 		try
 		(
-		    Reader srcIn = new FileReader(source.toFile(), Charsets.UTF_8); 
+		    Reader srcIn = new FileReader(source.toFile()); 
 			StringWriter w = new StringWriter();
 		)
 		{
@@ -88,7 +86,7 @@ public class SDPReadWriteTest
 			SDPUtils.write(sdp, w);
 			
 			// Assert that what was now written is the same as that read.
-			assertEquals(w.toString(), Files.readString(expected, Charsets.UTF_8), "Unexpected difference between source and expected");
+			assertEquals(w.toString(), new String(Files.readAllBytes(expected), "UTF-8"), "Unexpected difference between source and expected");
 		}
 		catch (IOException e)
 		{
@@ -143,7 +141,7 @@ public class SDPReadWriteTest
 	{
 		try
 		(
-		    Reader srcIn = new FileReader(source.toFile(), Charsets.UTF_8); 
+		    Reader srcIn = new FileReader(source.toFile()); 
 		)
 		{
 			// Parse SDP
@@ -156,7 +154,7 @@ public class SDPReadWriteTest
 		{
 			try
 			{
-				final String[] parts = Files.readString(expected, Charsets.UTF_8).split("=", 2);
+				final String[] parts = new String(Files.readAllBytes(expected), "UTF-8").split("=", 2);
 				
 				assertEquals(t.getClass().getSimpleName(), parts[0], "Unexpected exception");
 				assertEquals(t.getMessage(), parts[1], "Unexpected exception message");

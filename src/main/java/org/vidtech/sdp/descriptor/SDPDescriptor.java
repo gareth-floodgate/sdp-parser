@@ -1,5 +1,7 @@
 package org.vidtech.sdp.descriptor;
 
+import java.util.Optional;
+
 /**
  * The SDP descriptor file.
  *
@@ -12,10 +14,14 @@ public class SDPDescriptor
 	
 	private final String sessionName;
 
+	private final Optional<String> sessionInfo;
+	
 
-	private SDPDescriptor(Builder builder) {
+	private SDPDescriptor(Builder builder) 
+	{
 		this.originator = builder.originator;
 		this.sessionName = builder.sessionName;
+		this.sessionInfo = Optional.ofNullable(builder.sessionInfo);
 	}
 
 	
@@ -34,7 +40,14 @@ public class SDPDescriptor
 	{
 		return sessionName;
 	}
+	
+	public Optional<String> getSessionInfo()
+	{
+		return sessionInfo;
+	}
 
+	
+	
 	/**
 	 * Creates builder to build {@link SDPDescriptor}.
 	 * @return created builder
@@ -49,6 +62,7 @@ public class SDPDescriptor
 	public static final class Builder {
 		private Originator originator;
 		private String sessionName;
+		private String sessionInfo;
 
 		private Builder() {
 		}
@@ -64,6 +78,11 @@ public class SDPDescriptor
 			return this;
 		}
 
+		public Builder withSessionInfo(String sessionInfo) {
+			this.sessionInfo = sessionInfo;
+			return this;
+		}
+		
 		public SDPDescriptor build() {
 			return new SDPDescriptor(this);
 		}
